@@ -10,8 +10,6 @@
 </head>
 <body>
 
-<div class="rig-texture"></div>
-
 <header class="site-header">
   <div class="header-inner">
     <div class="brand">
@@ -44,8 +42,15 @@
     <div class="gauge-wrap">
       <div class="gauge-card">
         <div class="gauge-header">
-          <span class="gauge-label">INBOUND — DL730</span>
-          <span class="gauge-sub">ANDREW TJERNAGEL &amp; TOM SCHREIER</span>
+          <div class="gauge-header-left">
+            <span class="gauge-label">INBOUND — DL730</span>
+            <span class="gauge-sub">ANDREW TJERNAGEL &amp; TOM SCHREIER</span>
+          </div>
+          <div class="gauge-status" id="gauge-status">HOLDING</div>
+        </div>
+
+        <div class="hero-photo-inset">
+          <img src="/images/hero-bg.jpg" alt="Field site installation" loading="lazy">
         </div>
 
         <div class="dial-wrap">
@@ -81,13 +86,7 @@
           <span>TOUCHDOWN</span>
           <span class="gauge-target">SEP 15 2026 &middot; 7:54 PM &middot; ABQ SUNPORT</span>
         </div>
-        <div class="gauge-status" id="gauge-status">HOLDING</div>
       </div>
-    </div>
-
-    <div class="hero-photo-strip">
-      <img src="/images/hero-bg.jpg" alt="Field site installation" loading="lazy">
-      <div class="photo-caption">SAN JUAN BASIN &mdash; FIELD OPERATIONS</div>
     </div>
 
     <div class="trip-brief">
@@ -144,9 +143,7 @@
 
 </main>
 
-<div class="scan-line"></div>
 
-<!-- Add / Edit Visit Modal -->
 <div class="modal-backdrop" id="visit-modal-backdrop">
   <div class="modal">
     <div class="modal-head">

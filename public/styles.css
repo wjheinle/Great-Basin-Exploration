@@ -17,43 +17,29 @@
 html, body {
   margin: 0;
   padding: 0;
-  background: var(--sand);
+  min-height: 100%;
   color: var(--ink);
   font-family: var(--font-body);
   scroll-behavior: smooth;
+}
+
+body {
+  background-image:
+    linear-gradient(rgba(28,30,26,0.82), rgba(28,30,26,0.7) 340px, rgba(232,228,218,0.97) 620px, var(--sand) 800px),
+    url('/images/site-bg-full.jpg');
+  background-size: cover;
+  background-position: top center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
 @media (prefers-reduced-motion: reduce) {
   * { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
 
-.rig-texture {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background-image:
-    repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(28,30,26,0.025) 40px),
-    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(28,30,26,0.025) 40px);
-}
-
-.scan-line {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, var(--rust), transparent);
-  z-index: 999;
-  animation: scan 5s linear infinite;
-  opacity: 0.5;
-}
-@keyframes scan {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(100vh); }
-}
-
 /* ---------- HEADER ---------- */
 .site-header {
-  background: var(--ink);
+  background: transparent;
   color: var(--sand);
   border-bottom: 4px solid var(--rust);
   position: relative;
@@ -181,11 +167,18 @@ main {
 .gauge-header {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: flex-start;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 10px;
   margin-bottom: 18px;
   font-family: var(--font-mono);
+  position: relative;
+  z-index: 1;
+}
+.gauge-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 .gauge-label {
   font-size: 13px;
@@ -205,6 +198,8 @@ main {
   gap: clamp(4px, 1.5vw, 14px);
   flex-wrap: wrap;
   margin: 4px 0 20px;
+  position: relative;
+  z-index: 1;
 }
 .gauge-unit {
   display: flex;
@@ -237,6 +232,8 @@ main {
   display: flex;
   justify-content: center;
   margin: 8px 0 4px;
+  position: relative;
+  z-index: 1;
 }
 .dial-svg {
   width: 100%;
@@ -315,19 +312,21 @@ main {
   font-size: 11px;
   letter-spacing: 0.1em;
   color: var(--sage);
+  position: relative;
+  z-index: 1;
 }
 .gauge-target { color: var(--brass); }
 .gauge-status {
-  position: absolute;
-  top: 24px;
-  right: 20px;
   font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.2em;
   color: var(--sage);
   border: 1px solid var(--sage);
   border-radius: 2px;
-  padding: 3px 8px;
+  padding: 4px 10px;
+  white-space: nowrap;
+  height: fit-content;
+  flex-shrink: 0;
 }
 .gauge-status.landed {
   color: var(--ink);
@@ -335,29 +334,26 @@ main {
   border-color: var(--sage);
 }
 
-.hero-photo-strip {
-  position: relative;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 28px;
-  border: 1px solid var(--line);
-}
-.hero-photo-strip img {
-  width: 100%;
-  height: 260px;
-  object-fit: cover;
-  display: block;
-  filter: saturate(0.85) contrast(1.05);
-}
-.photo-caption {
+.hero-photo-inset {
   position: absolute;
-  bottom: 0; left: 0; right: 0;
-  background: linear-gradient(0deg, rgba(28,30,26,0.85), transparent);
-  color: var(--sand);
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.14em;
-  padding: 24px 16px 10px;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: 4px;
+}
+.hero-photo-inset img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  opacity: 0.22;
+  filter: saturate(0.7) contrast(1.05);
+}
+.hero-photo-inset::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(28,30,26,0.55), rgba(28,30,26,0.88) 60%, var(--ink) 92%);
 }
 
 .trip-brief {
