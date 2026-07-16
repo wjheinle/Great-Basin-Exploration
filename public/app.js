@@ -151,6 +151,11 @@ function renderVisits() {
   });
 }
 
+function typeLabel(type) {
+  const labels = { prospect: 'Prospect', customer: 'Customer', distributor: 'Distributor' };
+  return labels[type] || 'Prospect';
+}
+
 function visitCardHTML(v) {
   const isScheduled = v.status === 'scheduled';
   const dateStr = v.date ? formatDate(v.date) : '';
@@ -158,7 +163,10 @@ function visitCardHTML(v) {
     <div class="visit-card ${isScheduled ? 'scheduled' : ''}" data-id="${v.id}">
       <div class="visit-card-top">
         <h3 class="visit-company">${escapeHTML(v.company)}</h3>
-        <span class="visit-status-chip ${isScheduled ? 'scheduled' : ''}">${isScheduled ? 'SCHEDULED' : 'PROSPECT'}</span>
+        <div class="visit-chips">
+          <span class="visit-type-chip visit-type-${v.type || 'prospect'}">${typeLabel(v.type)}</span>
+          <span class="visit-status-chip ${isScheduled ? 'scheduled' : ''}">${isScheduled ? 'SCHEDULED' : 'NOT YET SCHEDULED'}</span>
+        </div>
       </div>
       <div class="visit-meta-row">
         ${v.location ? `<span>&#128205; ${escapeHTML(v.location)}</span>` : ''}
@@ -198,6 +206,7 @@ function openModal(id) {
   const visit = id ? currentVisits.find(v => v.id === id) : null;
   document.getElementById('visit-id').value = visit ? visit.id : '';
   document.getElementById('f-company').value = visit ? visit.company : '';
+  document.getElementById('f-type').value = visit ? (visit.type || 'prospect') : 'prospect';
   document.getElementById('f-contact').value = visit ? visit.contact : '';
   document.getElementById('f-location').value = visit ? visit.location : '';
   document.getElementById('f-link').value = visit ? visit.link : '';
@@ -232,6 +241,7 @@ visitForm.addEventListener('submit', async (e) => {
   const id = document.getElementById('visit-id').value;
   const payload = {
     company: document.getElementById('f-company').value.trim(),
+    type: document.getElementById('f-type').value,
     contact: document.getElementById('f-contact').value.trim(),
     location: document.getElementById('f-location').value.trim(),
     link: document.getElementById('f-link').value.trim(),

@@ -18,11 +18,12 @@ const DEFAULTS = {
     {
       id: 'seed-1',
       company: 'Example Producer Co.',
+      type: 'prospect',
       contact: '',
       location: 'San Juan Basin, NM',
       notes: 'Sample entry — edit or delete me. Add real prospects here.',
       link: '',
-      status: 'prospect', // prospect | scheduled
+      status: 'prospect', // prospect | scheduled (scheduling state, shown as "Not yet scheduled" / "Scheduled")
       date: '',
       time: '',
       addedBy: '',
@@ -67,6 +68,7 @@ app.post('/api/visits', (req, res) => {
   const visit = {
     id: 'v' + Date.now() + Math.floor(Math.random() * 1000),
     company: req.body.company || 'Unnamed Prospect',
+    type: req.body.type || 'prospect',
     contact: req.body.contact || '',
     location: req.body.location || '',
     notes: req.body.notes || '',

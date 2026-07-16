@@ -92,7 +92,7 @@
     <div class="trip-brief">
       <div class="brief-col">
         <span class="brief-label">MISSION</span>
-        <p>Customer visits across the San Juan Basin, prospecting new accounts, and getting boots on the ground in territory. Bring the rounds when the schedule allows.</p>
+        <p>Customer visits across the San Juan Basin, prospecting new accounts, and getting boots on the ground in territory. Bring the clubs for when the schedule allows.</p>
       </div>
       <div class="brief-col">
         <span class="brief-label">CREW</span>
@@ -110,7 +110,7 @@
 
     <div class="visits-legend">
       <span class="legend-item"><span class="dot dot-scheduled"></span> Scheduled</span>
-      <span class="legend-item"><span class="dot dot-prospect"></span> Prospect</span>
+      <span class="legend-item"><span class="dot dot-prospect"></span> Not yet scheduled</span>
     </div>
 
     <div id="visits-list" class="visits-list">
@@ -154,6 +154,13 @@
       <input type="hidden" id="visit-id">
       <label>Company / Site
         <input type="text" id="f-company" required placeholder="e.g. Hilcorp San Juan Basin">
+      </label>
+      <label>Type
+        <select id="f-type">
+          <option value="prospect">Prospect</option>
+          <option value="customer">Customer</option>
+          <option value="distributor">Distributor</option>
+        </select>
       </label>
       <label>Contact
         <input type="text" id="f-contact" placeholder="Name, title">

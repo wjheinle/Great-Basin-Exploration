@@ -480,6 +480,12 @@ main {
   letter-spacing: 0.01em;
   margin: 0;
 }
+.visit-chips {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
 .visit-status-chip {
   font-family: var(--font-mono);
   font-size: 10px;
@@ -495,6 +501,27 @@ main {
   background: rgba(138,154,140,0.15);
   color: #4d5c4f;
   border-color: var(--sage);
+}
+.visit-type-chip {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  padding: 3px 9px;
+  border-radius: 2px;
+  white-space: nowrap;
+  background: rgba(42,45,39,0.06);
+  color: var(--ink-2);
+  border: 1px solid var(--line);
+}
+.visit-type-customer {
+  background: rgba(138,154,140,0.15);
+  color: #4d5c4f;
+  border-color: var(--sage);
+}
+.visit-type-distributor {
+  background: rgba(201,168,118,0.18);
+  color: #7a5f2e;
+  border-color: var(--brass);
 }
 .visit-meta-row {
   font-family: var(--font-mono);
@@ -705,7 +732,7 @@ main {
   letter-spacing: 0.08em;
   color: var(--ink-2);
 }
-#visit-form input, #visit-form textarea {
+#visit-form input, #visit-form textarea, #visit-form select {
   font-family: var(--font-body);
   font-size: 14px;
   padding: 9px 10px;
@@ -714,7 +741,7 @@ main {
   background: #fff;
   color: var(--ink);
 }
-#visit-form input:focus, #visit-form textarea:focus {
+#visit-form input:focus, #visit-form textarea:focus, #visit-form select:focus {
   outline: 2px solid var(--rust);
   outline-offset: 1px;
 }
