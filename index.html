@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Great Basin Exploration</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+<div class="rig-texture"></div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand">
+      <span class="brand-tag">FIELD OPS</span>
+      <h1 class="brand-title">The Great Basin<br>Exploration</h1>
+    </div>
+    <div class="header-meta">
+      <span class="meta-line">ABQ / FARMINGTON / SAN JUAN BASIN</span>
+      <span class="meta-line">SEP 15&ndash;19, 2026</span>
+    </div>
+  </div>
+</header>
+
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="home">
+    <span class="tab-num">01</span> COUNTDOWN
+  </button>
+  <button class="tab-btn" data-tab="visits">
+    <span class="tab-num">02</span> CUSTOMER VISITS
+  </button>
+  <button class="tab-btn" data-tab="golf">
+    <span class="tab-num">03</span> GOLF
+  </button>
+</nav>
+
+<main>
+
+  <!-- HOME / COUNTDOWN -->
+  <section id="home" class="tab-panel active">
+    <div class="gauge-wrap">
+      <div class="gauge-card">
+        <div class="gauge-header">
+          <span class="gauge-label">INBOUND — DL730</span>
+          <span class="gauge-sub">ANDREW TJERNAGEL &amp; TOM SCHREIER</span>
+        </div>
+        <div class="gauge-readout" id="countdown">
+          <div class="gauge-unit"><span class="gauge-digit" id="d-days">--</span><span class="gauge-uom">DAYS</span></div>
+          <div class="gauge-sep">:</div>
+          <div class="gauge-unit"><span class="gauge-digit" id="d-hours">--</span><span class="gauge-uom">HRS</span></div>
+          <div class="gauge-sep">:</div>
+          <div class="gauge-unit"><span class="gauge-digit" id="d-mins">--</span><span class="gauge-uom">MIN</span></div>
+          <div class="gauge-sep">:</div>
+          <div class="gauge-unit"><span class="gauge-digit" id="d-secs">--</span><span class="gauge-uom">SEC</span></div>
+        </div>
+        <div class="gauge-footer">
+          <span>TOUCHDOWN</span>
+          <span class="gauge-target">SEP 15 2026 &middot; 7:54 PM &middot; ABQ SUNPORT</span>
+        </div>
+        <div class="gauge-status" id="gauge-status">HOLDING</div>
+      </div>
+    </div>
+
+    <div class="hero-photo-strip">
+      <img src="/images/hero-bg.jpg" alt="Field actuator installation" loading="lazy">
+      <div class="photo-caption">ME34X ELECTRIC ACTUATOR &mdash; FIELD DEPLOYMENT</div>
+    </div>
+
+    <div class="trip-brief">
+      <div class="brief-col">
+        <span class="brief-label">MISSION</span>
+        <p>Customer visits across the San Juan Basin, prospecting new accounts, and scouting the ground for what electric actuation can replace out here. Bring the rounds when the schedule allows.</p>
+      </div>
+      <div class="brief-col">
+        <span class="brief-label">CREW</span>
+        <p>Bill Heinlein &middot; Andrew Tjernagel (Exlar) &middot; Tom Schreier (Exlar)</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CUSTOMER VISITS -->
+  <section id="visits" class="tab-panel">
+    <div class="panel-head">
+      <h2>Customer Visits</h2>
+      <button class="btn-primary" id="add-visit-btn">+ ADD VISIT / PROSPECT</button>
+    </div>
+
+    <div class="visits-legend">
+      <span class="legend-item"><span class="dot dot-scheduled"></span> Scheduled</span>
+      <span class="legend-item"><span class="dot dot-prospect"></span> Prospect</span>
+    </div>
+
+    <div id="visits-list" class="visits-list">
+      <!-- populated by JS -->
+    </div>
+  </section>
+
+  <!-- GOLF -->
+  <section id="golf" class="tab-panel">
+    <div class="panel-head">
+      <h2>Golf</h2>
+    </div>
+
+    <div class="scorecard">
+      <div class="scorecard-header">
+        <span>PLAYER</span>
+        <span>GHIN INDEX</span>
+        <span></span>
+      </div>
+      <div id="golfers-list" class="scorecard-body">
+        <!-- populated by JS -->
+      </div>
+    </div>
+
+    <h3 class="section-sub">Courses on the Route</h3>
+    <div class="course-grid" id="course-grid">
+      <!-- populated by JS -->
+    </div>
+  </section>
+
+</main>
+
+<div class="scan-line"></div>
+
+<!-- Add / Edit Visit Modal -->
+<div class="modal-backdrop" id="visit-modal-backdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <span id="modal-title">ADD VISIT / PROSPECT</span>
+      <button class="modal-close" id="modal-close">&times;</button>
+    </div>
+    <form id="visit-form">
+      <input type="hidden" id="visit-id">
+      <label>Company / Site
+        <input type="text" id="f-company" required placeholder="e.g. Hilcorp San Juan Basin">
+      </label>
+      <label>Contact
+        <input type="text" id="f-contact" placeholder="Name, title">
+      </label>
+      <label>Location
+        <input type="text" id="f-location" placeholder="e.g. Nageezi, NM">
+      </label>
+      <label>Link / Reference
+        <input type="url" id="f-link" placeholder="https://...">
+      </label>
+      <label>Notes
+        <textarea id="f-notes" rows="3" placeholder="Details, background, what to bring up"></textarea>
+      </label>
+      <label>Added by
+        <input type="text" id="f-addedby" placeholder="Your name">
+      </label>
+
+      <div class="schedule-block">
+        <label class="schedule-toggle">
+          <input type="checkbox" id="f-scheduled">
+          <span>Lock in schedule</span>
+        </label>
+        <div class="schedule-fields" id="schedule-fields">
+          <label>Date <input type="date" id="f-date"></label>
+          <label>Time <input type="time" id="f-time"></label>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn-danger" id="delete-visit-btn" style="display:none;">DELETE</button>
+        <button type="submit" class="btn-primary">SAVE</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="/app.js"></script>
+</body>
+</html>
