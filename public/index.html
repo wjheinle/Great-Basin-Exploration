@@ -47,15 +47,36 @@
           <span class="gauge-label">INBOUND — DL730</span>
           <span class="gauge-sub">ANDREW TJERNAGEL &amp; TOM SCHREIER</span>
         </div>
-        <div class="gauge-readout" id="countdown">
-          <div class="gauge-unit"><span class="gauge-digit" id="d-days">--</span><span class="gauge-uom">DAYS</span></div>
-          <div class="gauge-sep">:</div>
+
+        <div class="dial-wrap">
+          <svg id="dial-svg" viewBox="0 0 400 400" class="dial-svg">
+            <circle cx="200" cy="200" r="196" class="dial-bezel"/>
+            <circle cx="200" cy="200" r="178" class="dial-face"/>
+
+            <g id="dial-ticks"></g>
+            <g id="dial-numbers"></g>
+
+            <path id="dial-arc" class="dial-arc" fill="none"/>
+
+            <text x="200" y="150" class="dial-title" text-anchor="middle">DAYS</text>
+            <text x="200" y="176" class="dial-title" text-anchor="middle">TO GO</text>
+
+            <line id="dial-needle" x1="200" y1="200" x2="200" y2="90" class="dial-needle"/>
+            <circle cx="200" cy="200" r="14" class="dial-hub"/>
+            <circle cx="200" cy="200" r="4" class="dial-hub-pin"/>
+
+            <text x="200" y="252" class="dial-readout" text-anchor="middle" id="dial-days-num">--</text>
+          </svg>
+        </div>
+
+        <div class="gauge-digital" id="countdown">
           <div class="gauge-unit"><span class="gauge-digit" id="d-hours">--</span><span class="gauge-uom">HRS</span></div>
           <div class="gauge-sep">:</div>
           <div class="gauge-unit"><span class="gauge-digit" id="d-mins">--</span><span class="gauge-uom">MIN</span></div>
           <div class="gauge-sep">:</div>
           <div class="gauge-unit"><span class="gauge-digit" id="d-secs">--</span><span class="gauge-uom">SEC</span></div>
         </div>
+
         <div class="gauge-footer">
           <span>TOUCHDOWN</span>
           <span class="gauge-target">SEP 15 2026 &middot; 7:54 PM &middot; ABQ SUNPORT</span>

@@ -198,13 +198,13 @@ main {
   letter-spacing: 0.1em;
   color: var(--sage);
 }
-.gauge-readout {
+.gauge-digital {
   display: flex;
   align-items: baseline;
   justify-content: center;
   gap: clamp(4px, 1.5vw, 14px);
   flex-wrap: wrap;
-  margin: 20px 0;
+  margin: 4px 0 20px;
 }
 .gauge-unit {
   display: flex;
@@ -214,23 +214,95 @@ main {
 .gauge-digit {
   font-family: var(--font-mono);
   font-weight: 700;
-  font-size: clamp(36px, 9vw, 64px);
+  font-size: clamp(22px, 5vw, 30px);
   line-height: 1;
   color: var(--sand);
   font-variant-numeric: tabular-nums;
 }
 .gauge-uom {
   font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.18em;
+  font-size: 9px;
+  letter-spacing: 0.16em;
   color: var(--sage);
-  margin-top: 6px;
+  margin-top: 4px;
 }
 .gauge-sep {
   font-family: var(--font-mono);
-  font-size: clamp(24px, 6vw, 40px);
+  font-size: clamp(16px, 3.5vw, 22px);
   color: var(--rust);
-  transform: translateY(-8px);
+  transform: translateY(-4px);
+}
+
+.dial-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 4px;
+}
+.dial-svg {
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+}
+.dial-bezel {
+  fill: #0e0f0c;
+  stroke: #000;
+  stroke-width: 2;
+}
+.dial-face {
+  fill: #EDE9DC;
+  stroke: #cfc9b8;
+  stroke-width: 1;
+}
+.dial-tick {
+  stroke: #3a382f;
+  stroke-width: 2;
+}
+.dial-tick.major {
+  stroke: #1C1E1A;
+  stroke-width: 3;
+}
+.dial-number {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+  fill: #1C1E1A;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+.dial-arc {
+  stroke: var(--rust);
+  stroke-width: 7;
+  stroke-linecap: round;
+  opacity: 0.85;
+}
+.dial-title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  fill: #6b6a5f;
+}
+.dial-readout {
+  font-family: var(--font-mono);
+  font-size: 34px;
+  font-weight: 700;
+  fill: var(--rust);
+  font-variant-numeric: tabular-nums;
+}
+.dial-needle {
+  stroke: #1C1E1A;
+  stroke-width: 5;
+  stroke-linecap: round;
+  transform-origin: 200px 200px;
+  transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.dial-hub {
+  fill: #2a2d27;
+  stroke: #000;
+  stroke-width: 1;
+}
+.dial-hub-pin {
+  fill: var(--brass);
 }
 .gauge-footer {
   display: flex;

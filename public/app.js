@@ -11,36 +11,108 @@ tabBtns.forEach(btn => {
   });
 });
 
-// ---------- COUNTDOWN ----------
+// ---------- DIAL GAUGE ----------
 // Flight DL730 landing ABQ 7:54 PM, Sep 15, 2026 (Mountain Time)
 const TARGET = new Date('2026-09-15T19:54:00-06:00').getTime();
+const GAUGE_MAX_DAYS = 60; // full-scale like the reference gauge's 0-60 range
+
+// Gauge geometry: 270-degree sweep, matching the photo (start at 225deg/bottom-left,
+// sweep clockwise through top, to -45deg/bottom-right — i.e. 60 at bottom-right, 0 at bottom-left... reversed here)
+// We want the needle to point to a HIGH value on day 1 (far out) and swing down to 0 at touchdown,
+// mirroring how the reference gauge's needle sits mid-scale and moves toward zero as pressure bleeds off.
+const START_ANGLE = -225; // degrees, bottom-left
+const END_ANGLE = 45;     // degrees, bottom-right (270 degree total sweep)
+const CENTER = 200;
+const TICK_OUTER_R = 178;
+const TICK_MAJOR_LEN = 18;
+const TICK_MINOR_LEN = 10;
+const NUMBER_R = 148;
+const ARC_R = 160;
+
+function polar(cx, cy, r, angleDeg) {
+  const rad = (angleDeg * Math.PI) / 180;
+  return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+}
+
+function angleForValue(value, maxValue) {
+  const frac = Math.min(Math.max(value / maxValue, 0), 1);
+  return START_ANGLE + frac * (END_ANGLE - START_ANGLE);
+}
+
+function buildGaugeFace() {
+  const ticksGroup = document.getElementById('dial-ticks');
+  const numbersGroup = document.getElementById('dial-numbers');
+  const majorStep = 10;
+  const minorStep = 2;
+
+  let ticksHTML = '';
+  let numbersHTML = '';
+
+  for (let v = 0; v <= GAUGE_MAX_DAYS; v += minorStep) {
+    const angle = angleForValue(v, GAUGE_MAX_DAYS);
+    const isMajor = v % majorStep === 0;
+    const len = isMajor ? TICK_MAJOR_LEN : TICK_MINOR_LEN;
+    const outer = polar(CENTER, CENTER, TICK_OUTER_R, angle);
+    const inner = polar(CENTER, CENTER, TICK_OUTER_R - len, angle);
+    ticksHTML += `<line x1="${inner.x.toFixed(1)}" y1="${inner.y.toFixed(1)}" x2="${outer.x.toFixed(1)}" y2="${outer.y.toFixed(1)}" class="dial-tick ${isMajor ? 'major' : ''}"/>`;
+
+    if (isMajor) {
+      const numPos = polar(CENTER, CENTER, NUMBER_R, angle);
+      numbersHTML += `<text x="${numPos.x.toFixed(1)}" y="${numPos.y.toFixed(1)}" class="dial-number">${v}</text>`;
+    }
+  }
+
+  ticksGroup.innerHTML = ticksHTML;
+  numbersGroup.innerHTML = numbersHTML;
+
+  // Red urgency arc from 0 to 10 days (the "low pressure" danger zone, mirroring the photo's red zone)
+  const arcStart = polar(CENTER, CENTER, ARC_R, angleForValue(0, GAUGE_MAX_DAYS));
+  const arcEnd = polar(CENTER, CENTER, ARC_R, angleForValue(10, GAUGE_MAX_DAYS));
+  const arcPath = `M ${arcStart.x.toFixed(1)} ${arcStart.y.toFixed(1)} A ${ARC_R} ${ARC_R} 0 0 1 ${arcEnd.x.toFixed(1)} ${arcEnd.y.toFixed(1)}`;
+  document.getElementById('dial-arc').setAttribute('d', arcPath);
+}
+
+function setNeedle(daysRemaining) {
+  const clamped = Math.min(Math.max(daysRemaining, 0), GAUGE_MAX_DAYS);
+  const angle = angleForValue(clamped, GAUGE_MAX_DAYS);
+  // needle SVG line is drawn pointing "up" (angle -90deg) by default from the markup (x2 y=90, i.e. up from center)
+  // rotate so it points along our computed angle instead
+  const rotation = angle - (-90);
+  document.getElementById('dial-needle').style.transform = `rotate(${rotation}deg)`;
+}
 
 function updateCountdown() {
   const now = Date.now();
   const diff = TARGET - now;
   const statusEl = document.getElementById('gauge-status');
+  const daysNumEl = document.getElementById('dial-days-num');
 
   if (diff <= 0) {
-    document.getElementById('d-days').textContent = '00';
     document.getElementById('d-hours').textContent = '00';
     document.getElementById('d-mins').textContent = '00';
     document.getElementById('d-secs').textContent = '00';
+    daysNumEl.textContent = '0';
+    setNeedle(0);
     statusEl.textContent = 'ON THE GROUND';
     statusEl.classList.add('landed');
     return;
   }
 
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const totalDaysFrac = diff / (1000 * 60 * 60 * 24);
+  const days = Math.floor(totalDaysFrac);
   const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
   const mins = Math.floor((diff / (1000 * 60)) % 60);
   const secs = Math.floor((diff / 1000) % 60);
 
-  document.getElementById('d-days').textContent = String(days).padStart(2, '0');
   document.getElementById('d-hours').textContent = String(hours).padStart(2, '0');
   document.getElementById('d-mins').textContent = String(mins).padStart(2, '0');
   document.getElementById('d-secs').textContent = String(secs).padStart(2, '0');
+  daysNumEl.textContent = String(days);
+  setNeedle(totalDaysFrac);
   statusEl.textContent = 'HOLDING';
 }
+
+buildGaugeFace();
 updateCountdown();
 setInterval(updateCountdown, 1000);
 
