@@ -6,8 +6,8 @@
 <title>The Great Basin Exploration</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/styles.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<link rel="stylesheet" href="/styles.css">
 </head>
 <body>
 
@@ -208,7 +208,11 @@
         <input type="text" id="f-contact" placeholder="Name, title">
       </label>
       <label>Location
-        <input type="text" id="f-location" placeholder="e.g. Nageezi, NM">
+        <div class="geocode-row">
+          <input type="text" id="f-location" placeholder="e.g. Nageezi, NM or full address">
+          <button type="button" class="btn-geocode" id="f-geocode-btn">LOCATE</button>
+        </div>
+        <span class="geocode-status" id="f-geocode-status"></span>
       </label>
       <div class="coord-row">
         <label>Latitude <input type="number" step="any" id="f-lat" placeholder="optional"></label>
@@ -291,6 +295,13 @@
       </label>
       <label>City
         <input type="text" id="ht-city" placeholder="e.g. Albuquerque, NM">
+      </label>
+      <label>Address (for map)
+        <div class="geocode-row">
+          <input type="text" id="ht-address" placeholder="Street address or hotel name + city">
+          <button type="button" class="btn-geocode" id="ht-geocode-btn">LOCATE</button>
+        </div>
+        <span class="geocode-status" id="ht-geocode-status"></span>
       </label>
       <div class="coord-row">
         <label>Check-in <input type="date" id="ht-checkin"></label>

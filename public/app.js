@@ -210,6 +210,8 @@ function openModal(id) {
   document.getElementById('f-type').value = visit ? (visit.type || 'prospect') : 'prospect';
   document.getElementById('f-contact').value = visit ? visit.contact : '';
   document.getElementById('f-location').value = visit ? visit.location : '';
+  document.getElementById('f-geocode-status').textContent = '';
+  document.getElementById('f-geocode-status').className = 'geocode-status';
   document.getElementById('f-lat').value = (visit && visit.lat !== null && visit.lat !== undefined) ? visit.lat : '';
   document.getElementById('f-lng').value = (visit && visit.lng !== null && visit.lng !== undefined) ? visit.lng : '';
   document.getElementById('f-link').value = visit ? visit.link : '';
@@ -402,6 +404,58 @@ courseGrid.innerHTML = courses.map(c => `
   </div>
 `).join('');
 
+// ---------- GEOCODING (address -> lat/lng via Nominatim) ----------
+async function geocodeAddress(query) {
+  if (!query || !query.trim()) return null;
+  const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`;
+  const res = await fetch(url, {
+    headers: { 'Accept': 'application/json' }
+  });
+  if (!res.ok) throw new Error('Geocoding request failed');
+  const results = await res.json();
+  if (!results.length) return null;
+  return { lat: parseFloat(results[0].lat), lng: parseFloat(results[0].lon), displayName: results[0].display_name };
+}
+
+function wireGeocodeButton(buttonId, addressInputId, latInputId, lngInputId, statusId) {
+  const btn = document.getElementById(buttonId);
+  if (!btn) return;
+  btn.addEventListener('click', async () => {
+    const address = document.getElementById(addressInputId).value.trim();
+    const statusEl = document.getElementById(statusId);
+    if (!address) {
+      statusEl.textContent = 'Enter an address first.';
+      statusEl.className = 'geocode-status error';
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = 'LOCATING...';
+    statusEl.textContent = '';
+    statusEl.className = 'geocode-status';
+    try {
+      const result = await geocodeAddress(address);
+      if (result) {
+        document.getElementById(latInputId).value = result.lat;
+        document.getElementById(lngInputId).value = result.lng;
+        statusEl.textContent = `Found: ${result.displayName}`;
+        statusEl.className = 'geocode-status success';
+      } else {
+        statusEl.textContent = 'No match found — try a more specific address, or enter lat/long manually.';
+        statusEl.className = 'geocode-status error';
+      }
+    } catch (err) {
+      statusEl.textContent = 'Lookup failed — check your connection, or enter lat/long manually.';
+      statusEl.className = 'geocode-status error';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'LOCATE';
+    }
+  });
+}
+
+wireGeocodeButton('f-geocode-btn', 'f-location', 'f-lat', 'f-lng', 'f-geocode-status');
+wireGeocodeButton('ht-geocode-btn', 'ht-address', 'ht-lat', 'ht-lng', 'ht-geocode-status');
+
 // ---------- TRIP MAP ----------
 const ABQ_SUNPORT = { name: 'ABQ Sunport', lat: 35.0405314, lng: -106.60979959999999 };
 let tripMap = null;
@@ -422,17 +476,21 @@ function initTripMap() {
 
 function pinIcon(type, color) {
   const icons = {
-    airport: `<svg viewBox="0 0 24 24" width="26" height="26"><path fill="${color}" stroke="#fff" stroke-width="1.2" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2.5 1.8V22l3.5-1 3.5 1v-1.2L12 19v-5.5l9 2.5z"/></svg>`,
-    visit: `<svg viewBox="0 0 24 24" width="24" height="24"><path fill="${color}" stroke="#fff" stroke-width="1" d="M12 2C7.6 2 4 5.6 4 10c0 6 8 12 8 12s8-6 8-12c0-4.4-3.6-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>`,
-    hotel: `<svg viewBox="0 0 24 24" width="24" height="24"><path fill="${color}" stroke="#fff" stroke-width="1" d="M3 21V10.5L12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>`,
-    golf: `<svg viewBox="0 0 24 24" width="24" height="24"><path fill="${color}" stroke="#fff" stroke-width="0.8" d="M6 3v18h1.2v-6.4h.3l6-2.4a1 1 0 0 0 0-1.86l-6-2.4h-.3V3H6z"/><ellipse cx="7.6" cy="21" rx="2.6" ry="0.7" fill="${color}" opacity="0.35"/></svg>`
+    airport: `<path fill="${color}" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2.5 1.8V22l3.5-1 3.5 1v-1.2L12 19v-5.5l9 2.5z"/>`,
+    visit: `<path fill="${color}" d="M12 2C7.6 2 4 5.6 4 10c0 6 8 12 8 12s8-6 8-12c0-4.4-3.6-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>`,
+    hotel: `<path fill="${color}" d="M3 21V10.5L12 3l9 7.5V21h-6v-6H9v6H3z"/>`,
+    golf: `<path fill="${color}" d="M6 3v18h1.2v-6.4h.3l6-2.4a1 1 0 0 0 0-1.86l-6-2.4h-.3V3H6z"/><ellipse cx="7.6" cy="21" rx="2.6" ry="0.7" fill="${color}" opacity="0.35"/>`
   };
+  const html = `
+    <div class="pin-badge">
+      <svg viewBox="0 0 24 24" width="20" height="20">${icons[type] || icons.visit}</svg>
+    </div>`;
   return L.divIcon({
     className: `trip-pin trip-pin-${type}`,
-    html: icons[type] || icons.visit,
-    iconSize: [26, 26],
-    iconAnchor: [13, 24],
-    popupAnchor: [0, -22]
+    html,
+    iconSize: [36, 36],
+    iconAnchor: [18, 34],
+    popupAnchor: [0, -30]
   });
 }
 
@@ -630,6 +688,9 @@ function openHotelModal(id) {
   document.getElementById('ht-id').value = hotel ? hotel.id : '';
   document.getElementById('ht-name').value = hotel ? hotel.name : '';
   document.getElementById('ht-city').value = hotel ? hotel.city : '';
+  document.getElementById('ht-address').value = hotel ? [hotel.name, hotel.city].filter(Boolean).join(', ') : '';
+  document.getElementById('ht-geocode-status').textContent = '';
+  document.getElementById('ht-geocode-status').className = 'geocode-status';
   document.getElementById('ht-checkin').value = hotel ? hotel.checkin : '';
   document.getElementById('ht-checkout').value = hotel ? hotel.checkout : '';
   document.getElementById('ht-confirmation').value = hotel ? hotel.confirmation : '';

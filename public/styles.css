@@ -705,8 +705,32 @@ main {
   background: var(--sand-dim);
   z-index: 1;
 }
+.leaflet-div-icon {
+  background: transparent !important;
+  border: none !important;
+}
 .trip-pin {
-  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.45));
+  background: transparent;
+}
+.pin-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  background: #fff;
+  border: 2.5px solid var(--ink);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.trip-pin-visit .pin-badge { border-color: #B8541F; }
+.trip-pin-hotel .pin-badge { border-color: #C9A876; }
+.trip-pin-golf .pin-badge { border-color: #4d5c4f; }
+.trip-pin-airport .pin-badge { border-color: var(--ink); }
+.pin-badge svg {
+  transform: rotate(45deg);
+  display: block;
 }
 .map-legend {
   display: flex;
@@ -724,8 +748,8 @@ main {
   gap: 6px;
 }
 .map-legend-swatch {
-  width: 14px;
-  height: 14px;
+  width: 17px;
+  height: 17px;
   flex-shrink: 0;
 }
 
@@ -797,6 +821,39 @@ main {
   gap: 12px;
 }
 .coord-row label { flex: 1; }
+
+.geocode-row {
+  display: flex;
+  gap: 8px;
+}
+.geocode-row input {
+  flex: 1;
+}
+.btn-geocode {
+  background: var(--ink);
+  color: var(--sand);
+  border: none;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  padding: 0 14px;
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.btn-geocode:hover { background: var(--ink-2); }
+.btn-geocode:disabled { opacity: 0.6; cursor: default; }
+.geocode-status {
+  display: block;
+  margin-top: 5px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  min-height: 14px;
+}
+.geocode-status.success { color: #4d5c4f; }
+.geocode-status.error { color: var(--rust); }
 
 /* ---------- MODAL ---------- */
 .modal-backdrop {
