@@ -21,6 +21,8 @@ const DEFAULTS = {
       type: 'prospect',
       contact: '',
       location: 'San Juan Basin, NM',
+      lat: null,
+      lng: null,
       notes: 'Sample entry — edit or delete me. Add real prospects here.',
       link: '',
       status: 'prospect', // prospect | scheduled (scheduling state, shown as "Not yet scheduled" / "Scheduled")
@@ -34,6 +36,47 @@ const DEFAULTS = {
     { id: 'g1', name: 'Bill Heinlein', ghin: 15.5 },
     { id: 'g2', name: 'Andrew Tjernagel', ghin: 14.8 },
     { id: 'g3', name: 'Tom Schreier', ghin: 8.8 }
+  ],
+  flights: [
+    {
+      id: 'flight-seed-1',
+      traveler: 'Andrew Tjernagel & Tom Schreier',
+      flightNum: 'DL730',
+      from: '',
+      to: 'ABQ',
+      date: '2026-09-15',
+      time: '19:54',
+      notes: 'Landing ABQ Sunport',
+      createdAt: new Date().toISOString()
+    }
+  ],
+  hotels: [
+    {
+      id: 'hotel-seed-1',
+      name: 'TownePlace Suites by Marriott ABQ Airport',
+      city: 'Albuquerque, NM',
+      checkin: '2026-09-15',
+      checkout: '2026-09-16',
+      confirmation: '',
+      link: '',
+      lat: 35.059015699999996,
+      lng: -106.6197073,
+      notes: 'Bill — Marriott',
+      createdAt: new Date().toISOString()
+    },
+    {
+      id: 'hotel-seed-2',
+      name: 'Home2 Suites by Hilton ABQ Airport',
+      city: 'Albuquerque, NM',
+      checkin: '2026-09-15',
+      checkout: '2026-09-16',
+      confirmation: '',
+      link: '',
+      lat: 35.051762,
+      lng: -106.63144199999999,
+      notes: 'Andrew — Hilton',
+      createdAt: new Date().toISOString()
+    }
   ]
 };
 
@@ -43,7 +86,13 @@ function loadData() {
     return JSON.parse(JSON.stringify(DEFAULTS));
   }
   try {
-    return JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    const data = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8'));
+    // Migration safeguard: older deployments may predate flights/hotels
+    if (!Array.isArray(data.flights)) data.flights = [];
+    if (!Array.isArray(data.hotels)) data.hotels = [];
+    if (!Array.isArray(data.visits)) data.visits = [];
+    if (!Array.isArray(data.golfers)) data.golfers = DEFAULTS.golfers;
+    return data;
   } catch (e) {
     console.error('Error reading data file, using defaults', e);
     return JSON.parse(JSON.stringify(DEFAULTS));
@@ -71,6 +120,8 @@ app.post('/api/visits', (req, res) => {
     type: req.body.type || 'prospect',
     contact: req.body.contact || '',
     location: req.body.location || '',
+    lat: (req.body.lat !== undefined && req.body.lat !== null && req.body.lat !== '') ? parseFloat(req.body.lat) : null,
+    lng: (req.body.lng !== undefined && req.body.lng !== null && req.body.lng !== '') ? parseFloat(req.body.lng) : null,
     notes: req.body.notes || '',
     link: req.body.link || '',
     status: 'prospect',
@@ -115,6 +166,88 @@ app.put('/api/golfers/:id', (req, res) => {
   }
   saveData(data);
   res.json(data.golfers[idx]);
+});
+
+// ---- Flights API ----
+app.get('/api/flights', (req, res) => {
+  const data = loadData();
+  res.json(data.flights);
+});
+
+app.post('/api/flights', (req, res) => {
+  const data = loadData();
+  const flight = {
+    id: 'f' + Date.now() + Math.floor(Math.random() * 1000),
+    traveler: req.body.traveler || '',
+    flightNum: req.body.flightNum || '',
+    from: req.body.from || '',
+    to: req.body.to || '',
+    date: req.body.date || '',
+    time: req.body.time || '',
+    notes: req.body.notes || '',
+    createdAt: new Date().toISOString()
+  };
+  data.flights.push(flight);
+  saveData(data);
+  res.json(flight);
+});
+
+app.put('/api/flights/:id', (req, res) => {
+  const data = loadData();
+  const idx = data.flights.findIndex(f => f.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Flight not found' });
+  data.flights[idx] = { ...data.flights[idx], ...req.body };
+  saveData(data);
+  res.json(data.flights[idx]);
+});
+
+app.delete('/api/flights/:id', (req, res) => {
+  const data = loadData();
+  data.flights = data.flights.filter(f => f.id !== req.params.id);
+  saveData(data);
+  res.json({ success: true });
+});
+
+// ---- Hotels API ----
+app.get('/api/hotels', (req, res) => {
+  const data = loadData();
+  res.json(data.hotels);
+});
+
+app.post('/api/hotels', (req, res) => {
+  const data = loadData();
+  const hotel = {
+    id: 'h' + Date.now() + Math.floor(Math.random() * 1000),
+    name: req.body.name || 'Unnamed Hotel',
+    city: req.body.city || '',
+    checkin: req.body.checkin || '',
+    checkout: req.body.checkout || '',
+    confirmation: req.body.confirmation || '',
+    link: req.body.link || '',
+    lat: (req.body.lat !== undefined && req.body.lat !== null && req.body.lat !== '') ? parseFloat(req.body.lat) : null,
+    lng: (req.body.lng !== undefined && req.body.lng !== null && req.body.lng !== '') ? parseFloat(req.body.lng) : null,
+    notes: req.body.notes || '',
+    createdAt: new Date().toISOString()
+  };
+  data.hotels.push(hotel);
+  saveData(data);
+  res.json(hotel);
+});
+
+app.put('/api/hotels/:id', (req, res) => {
+  const data = loadData();
+  const idx = data.hotels.findIndex(h => h.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'Hotel not found' });
+  data.hotels[idx] = { ...data.hotels[idx], ...req.body };
+  saveData(data);
+  res.json(data.hotels[idx]);
+});
+
+app.delete('/api/hotels/:id', (req, res) => {
+  const data = loadData();
+  data.hotels = data.hotels.filter(h => h.id !== req.params.id);
+  saveData(data);
+  res.json({ success: true });
 });
 
 app.listen(PORT, () => {

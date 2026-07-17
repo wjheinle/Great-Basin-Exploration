@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 </head>
 <body>
 
@@ -32,6 +33,9 @@
   </button>
   <button class="tab-btn" data-tab="golf">
     <span class="tab-num">03</span> GOLF
+  </button>
+  <button class="tab-btn" data-tab="logistics">
+    <span class="tab-num">04</span> LOGISTICS
   </button>
 </nav>
 
@@ -116,6 +120,10 @@
     <div id="visits-list" class="visits-list">
       <!-- populated by JS -->
     </div>
+
+    <h3 class="section-sub">Trip Map</h3>
+    <p class="map-hint">Showing all visits with coordinates set, plus ABQ Sunport, hotels, and golf courses. Add lat/long on a visit to place it here.</p>
+    <div id="trip-map" class="trip-map"></div>
   </section>
 
   <!-- GOLF -->
@@ -138,6 +146,33 @@
     <h3 class="section-sub">Courses on the Route</h3>
     <div class="course-grid" id="course-grid">
       <!-- populated by JS -->
+    </div>
+  </section>
+
+  <!-- LOGISTICS -->
+  <section id="logistics" class="tab-panel">
+    <div class="panel-head">
+      <h2>Logistics</h2>
+    </div>
+
+    <div class="logistics-block">
+      <div class="logistics-block-head">
+        <h3 class="section-sub" style="margin-top:0;">Flights</h3>
+        <button class="btn-primary" id="add-flight-btn">+ ADD FLIGHT</button>
+      </div>
+      <div id="flights-list" class="flights-list">
+        <!-- populated by JS -->
+      </div>
+    </div>
+
+    <div class="logistics-block">
+      <div class="logistics-block-head">
+        <h3 class="section-sub" style="margin-top:0;">Hotels</h3>
+        <button class="btn-primary" id="add-hotel-btn">+ ADD HOTEL</button>
+      </div>
+      <div id="hotels-list" class="hotels-list">
+        <!-- populated by JS -->
+      </div>
     </div>
   </section>
 
@@ -168,6 +203,10 @@
       <label>Location
         <input type="text" id="f-location" placeholder="e.g. Nageezi, NM">
       </label>
+      <div class="coord-row">
+        <label>Latitude <input type="number" step="any" id="f-lat" placeholder="optional"></label>
+        <label>Longitude <input type="number" step="any" id="f-lng" placeholder="optional"></label>
+      </div>
       <label>Link / Reference
         <input type="url" id="f-link" placeholder="https://...">
       </label>
@@ -197,6 +236,81 @@
   </div>
 </div>
 
+<!-- Add / Edit Flight Modal -->
+<div class="modal-backdrop" id="flight-modal-backdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <span id="flight-modal-title">ADD FLIGHT</span>
+      <button class="modal-close" id="flight-modal-close">&times;</button>
+    </div>
+    <form id="flight-form">
+      <input type="hidden" id="fl-id">
+      <label>Traveler(s)
+        <input type="text" id="fl-traveler" placeholder="e.g. Bill Heinlein">
+      </label>
+      <label>Airline / Flight #
+        <input type="text" id="fl-flightnum" placeholder="e.g. DL730" required>
+      </label>
+      <div class="coord-row">
+        <label>From <input type="text" id="fl-from" placeholder="DEN"></label>
+        <label>To <input type="text" id="fl-to" placeholder="ABQ"></label>
+      </div>
+      <div class="coord-row">
+        <label>Date <input type="date" id="fl-date"></label>
+        <label>Time <input type="time" id="fl-time"></label>
+      </div>
+      <label>Notes
+        <textarea id="fl-notes" rows="2" placeholder="Confirmation #, terminal, etc."></textarea>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn-danger" id="delete-flight-btn" style="display:none;">DELETE</button>
+        <button type="submit" class="btn-primary">SAVE</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Add / Edit Hotel Modal -->
+<div class="modal-backdrop" id="hotel-modal-backdrop">
+  <div class="modal">
+    <div class="modal-head">
+      <span id="hotel-modal-title">ADD HOTEL</span>
+      <button class="modal-close" id="hotel-modal-close">&times;</button>
+    </div>
+    <form id="hotel-form">
+      <input type="hidden" id="ht-id">
+      <label>Hotel Name
+        <input type="text" id="ht-name" required placeholder="e.g. TownePlace Suites ABQ Airport">
+      </label>
+      <label>City
+        <input type="text" id="ht-city" placeholder="e.g. Albuquerque, NM">
+      </label>
+      <div class="coord-row">
+        <label>Check-in <input type="date" id="ht-checkin"></label>
+        <label>Check-out <input type="date" id="ht-checkout"></label>
+      </div>
+      <label>Confirmation #
+        <input type="text" id="ht-confirmation" placeholder="optional">
+      </label>
+      <label>Link
+        <input type="url" id="ht-link" placeholder="https://...">
+      </label>
+      <div class="coord-row">
+        <label>Latitude <input type="number" step="any" id="ht-lat" placeholder="optional"></label>
+        <label>Longitude <input type="number" step="any" id="ht-lng" placeholder="optional"></label>
+      </div>
+      <label>Notes
+        <textarea id="ht-notes" rows="2" placeholder="Who's staying here, points/status notes, etc."></textarea>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn-danger" id="delete-hotel-btn" style="display:none;">DELETE</button>
+        <button type="submit" class="btn-primary">SAVE</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script src="/app.js"></script>
 </body>
 </html>
