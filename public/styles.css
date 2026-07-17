@@ -705,14 +705,28 @@ main {
   background: var(--sand-dim);
   z-index: 1;
 }
-.trip-pin span {
-  display: block;
-  width: 16px;
-  height: 16px;
-  border-radius: 50% 50% 50% 0;
-  transform: rotate(-45deg);
-  border: 2px solid #fff;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.4);
+.trip-pin {
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,0.45));
+}
+.map-legend {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-2);
+  letter-spacing: 0.05em;
+}
+.map-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.map-legend-swatch {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
 }
 
 /* ---------- LOGISTICS (flights/hotels) ---------- */

@@ -420,12 +420,19 @@ function initTripMap() {
   tripMapLayer = L.layerGroup().addTo(tripMap);
 }
 
-function pinIcon(color) {
+function pinIcon(type, color) {
+  const icons = {
+    airport: `<svg viewBox="0 0 24 24" width="26" height="26"><path fill="${color}" stroke="#fff" stroke-width="1.2" d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2.5 1.8V22l3.5-1 3.5 1v-1.2L12 19v-5.5l9 2.5z"/></svg>`,
+    visit: `<svg viewBox="0 0 24 24" width="24" height="24"><path fill="${color}" stroke="#fff" stroke-width="1" d="M12 2C7.6 2 4 5.6 4 10c0 6 8 12 8 12s8-6 8-12c0-4.4-3.6-8-8-8zm0 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg>`,
+    hotel: `<svg viewBox="0 0 24 24" width="24" height="24"><path fill="${color}" stroke="#fff" stroke-width="1" d="M3 21V10.5L12 3l9 7.5V21h-6v-6H9v6H3z"/></svg>`,
+    golf: `<svg viewBox="0 0 24 24" width="24" height="24"><path fill="${color}" stroke="#fff" stroke-width="0.8" d="M6 3v18h1.2v-6.4h.3l6-2.4a1 1 0 0 0 0-1.86l-6-2.4h-.3V3H6z"/><ellipse cx="7.6" cy="21" rx="2.6" ry="0.7" fill="${color}" opacity="0.35"/></svg>`
+  };
   return L.divIcon({
-    className: 'trip-pin',
-    html: `<span style="background:${color}"></span>`,
-    iconSize: [16, 16],
-    iconAnchor: [8, 8]
+    className: `trip-pin trip-pin-${type}`,
+    html: icons[type] || icons.visit,
+    iconSize: [26, 26],
+    iconAnchor: [13, 24],
+    popupAnchor: [0, -22]
   });
 }
 
@@ -436,35 +443,35 @@ function renderTripMap() {
   const bounds = [];
 
   // ABQ Sunport — always shown
-  const sunportMarker = L.marker([ABQ_SUNPORT.lat, ABQ_SUNPORT.lng], { icon: pinIcon('#1C1E1A') })
+  const sunportMarker = L.marker([ABQ_SUNPORT.lat, ABQ_SUNPORT.lng], { icon: pinIcon('airport', '#1C1E1A') })
     .bindPopup(`<strong>${ABQ_SUNPORT.name}</strong><br>Arrival/departure point`);
   tripMapLayer.addLayer(sunportMarker);
   bounds.push([ABQ_SUNPORT.lat, ABQ_SUNPORT.lng]);
 
-  // Visits with coordinates
+  // Visits with coordinates — rust (droplet pin), sage ring for scheduled
   currentVisits.forEach(v => {
     if (v.lat !== null && v.lat !== undefined && v.lng !== null && v.lng !== undefined && !isNaN(v.lat) && !isNaN(v.lng)) {
-      const color = v.status === 'scheduled' ? '#8A9A8C' : '#B8541F';
-      const marker = L.marker([v.lat, v.lng], { icon: pinIcon(color) })
+      const color = v.status === 'scheduled' ? '#4d5c4f' : '#B8541F';
+      const marker = L.marker([v.lat, v.lng], { icon: pinIcon('visit', color) })
         .bindPopup(`<strong>${escapeHTML(v.company)}</strong><br>${escapeHTML(typeLabel(v.type))} &middot; ${v.status === 'scheduled' ? 'Scheduled' : 'Not yet scheduled'}${v.location ? '<br>' + escapeHTML(v.location) : ''}`);
       tripMapLayer.addLayer(marker);
       bounds.push([v.lat, v.lng]);
     }
   });
 
-  // Hotels with coordinates
+  // Hotels with coordinates — brass house pin
   currentHotels.forEach(h => {
     if (h.lat !== null && h.lat !== undefined && h.lng !== null && h.lng !== undefined && !isNaN(h.lat) && !isNaN(h.lng)) {
-      const marker = L.marker([h.lat, h.lng], { icon: pinIcon('#C9A876') })
+      const marker = L.marker([h.lat, h.lng], { icon: pinIcon('hotel', '#C9A876') })
         .bindPopup(`<strong>${escapeHTML(h.name)}</strong><br>Hotel${h.checkin ? '<br>' + formatDate(h.checkin) + (h.checkout ? ' \u2013 ' + formatDate(h.checkout) : '') : ''}`);
       tripMapLayer.addLayer(marker);
       bounds.push([h.lat, h.lng]);
     }
   });
 
-  // Golf courses (always shown as reference)
+  // Golf courses — sage flag pin
   courses.forEach(c => {
-    const marker = L.marker([c.lat, c.lng], { icon: pinIcon('#4d5c4f') })
+    const marker = L.marker([c.lat, c.lng], { icon: pinIcon('golf', '#8A9A8C') })
       .bindPopup(`<strong>${escapeHTML(c.name)}</strong><br>Golf &middot; ${escapeHTML(c.location)}`);
     tripMapLayer.addLayer(marker);
     bounds.push([c.lat, c.lng]);
